@@ -1,0 +1,2888 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام الموقف اليومي لتجهيز الوقود</title>
+
+<style>
+/* أنماط سابقة مع تحسينات */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  margin: 0;
+  color: #333;
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.login {
+  max-width: 500px;
+  margin: 100px auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+}
+
+.login h3 {
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #2c3e50;
+  text-align: center;
+  font-size: 28px;
+}
+
+.login input {
+  width: 100%;
+  padding: 15px;
+  margin: 15px 0;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.login input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.login button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  margin-top: 20px;
+  font-weight: bold;
+  transition: transform 0.3s;
+}
+
+.login button:hover {
+  transform: translateY(-2px);
+}
+
+.system {
+  max-width: 1600px;
+  margin: auto;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.controls {
+  background: white;
+  padding: 30px 40px;
+  border-bottom: 1px solid #eee;
+}
+
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.controls-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 10px;
+}
+
+.controls-group label {
+  font-weight: bold;
+  min-width: 140px;
+  color: #2c3e50;
+}
+
+.controls-group input, .controls-group select {
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 50px;
+  font-size: 14px;
+  background: #f8f9fa;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 25px;
+  justify-content: center;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+}
+
+.secondary-btn {
+  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+  color: white;
+}
+
+.danger-btn {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+}
+
+.success-btn {
+  background: linear-gradient(135deg, #27ae60, #219653);
+  color: white;
+}
+
+.info-btn {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+}
+
+.warning-btn {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+}
+
+.admin-badge {
+  background: #e74c3c;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+}
+
+.user-badge {
+  background: #3498db;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+}
+
+.table-container {
+  position: relative;
+  background: white;
+  overflow-x: auto;
+  max-height: 600px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 1200px;
+}
+
+th, td {
+  border: 1px solid #e0e0e0;
+  padding: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+th {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
+  color: white;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+tbody tr:hover {
+  background: #e3f2fd;
+  transform: scale(1.002);
+  transition: transform 0.1s;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  text-align: center;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+input[type="number"]:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* تحسين شريط التقدم */
+.progress-container {
+  position: relative;
+  width: 100%;
+  height: 25px;
+  background: #ecf0f1;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.percent {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* إشعارات النظام */
+.system-notifications {
+  position: fixed;
+  top: 100px;
+  right: 30px;
+  width: 350px;
+  z-index: 2000;
+}
+
+.notification-item {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  border-right: 5px solid;
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.notification-item.info {
+  border-color: #3498db;
+}
+
+.notification-item.warning {
+  border-color: #f39c12;
+}
+
+.notification-item.success {
+  border-color: #27ae60;
+}
+
+.notification-item.danger {
+  border-color: #e74c3c;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.notification-title {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: #95a5a6;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+}
+
+/* تعديل حقل الإضافة السريع */
+.quick-add {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.quick-add input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.quick-add button {
+  padding: 12px 24px;
+}
+
+/* زر مسح القيم */
+.clear-btn {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+/* إعلانات النظام */
+.system-announcement {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+  padding: 15px 30px;
+  text-align: center;
+  font-weight: bold;
+  position: sticky;
+  top: 80px;
+  z-index: 999;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.9; }
+  50% { opacity: 1; }
+  100% { opacity: 0.9; }
+}
+
+/* تحسين التبويبات */
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tab {
+  padding: 12px 24px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: #f8f9fa;
+  margin: 0 2px;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.tab:hover {
+  background: #e9ecef;
+}
+
+.tab.active {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* زر تبديل المستخدم */
+.switch-user-btn {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 15px;
+}
+
+/* زر حفظ التعديلات */
+.save-all-btn {
+  background: linear-gradient(135deg, #27ae60, #219653);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* تحسين قائمة الجهات */
+.entities-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.entity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  transition: background 0.3s;
+}
+
+.entity-item:hover {
+  background: #f8f9fa;
+}
+
+.entity-name {
+  font-weight: bold;
+  flex: 1;
+  min-width: 300px;
+  color: #2c3e50;
+}
+
+.entity-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.entity-actions input {
+  width: 100px;
+  padding: 8px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* زر الإضافة السريعة */
+.quick-action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* تحسين النوافذ المنبثقة */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+/* تحسين تنبيهات النظام */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 10px;
+  color: white;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: slideInRight 0.3s ease;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.notification.success {
+  background: linear-gradient(135deg, #27ae60, #219653);
+}
+
+.notification.error {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.notification.info {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.notification.warning {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.notification .close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+}
+
+/* تنسيق قائمة المستخدمين */
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  transition: background 0.3s;
+}
+
+.user-item:hover {
+  background: #f8f9fa;
+}
+
+/* نمط حقول كلمة المرور */
+.password-field {
+  position: relative;
+  width: 100%;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+}
+
+/* أنماط إضافية للصيانة */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.stat-item {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.stat-label {
+  display: block;
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.danger-zone {
+  background: #ffebee;
+  border: 2px solid #ffcdd2;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 20px 0;
+}
+
+.danger-zone h5 {
+  color: #c62828;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.backup-zone {
+  background: #e8f5e9;
+  border: 2px solid #c8e6c9;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 20px 0;
+}
+
+.backup-zone h5 {
+  color: #2e7d32;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.confirm-dialog {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.confirm-dialog h4 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.confirm-dialog p {
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.confirm-buttons button {
+  min-width: 120px;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+
+<!-- تسجيل الدخول -->
+<div class="login" id="loginBox">
+  <h3>🔐 تسجيل الدخول - نظام تجهيز الوقود</h3>
+  <input id="username" placeholder="اسم المستخدم" autocomplete="username">
+  <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+  <button onclick="login()">🚀 دخول إلى النظام</button>
+  <p id="loginMsg" class="error-message" style="display: none;"></p>
+</div>
+
+<!-- النظام الرئيسي -->
+<div class="system hidden" id="systemBox">
+  
+  <!-- العنوان مع الإعلانات -->
+  <div class="header">
+    <div>
+      <h3>⛽ نظام الموقف اليومي لتجهيز الوقود</h3>
+      <small style="opacity: 0.9;">إصدار متقدم مع التحكم الكامل في الصلاحيات</small>
+    </div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <div style="text-align: right;">
+        <div style="font-weight: bold; font-size: 16px;" id="currentUserDisplay"></div>
+        <div style="font-size: 12px; opacity: 0.8;" id="userRoleDisplay"></div>
+      </div>
+      <span id="roleBadge"></span>
+      <button class="switch-user-btn" onclick="switchUser()" id="switchUserBtn">
+        🔄 تبديل المستخدم
+      </button>
+    </div>
+  </div>
+  
+  <!-- إعلانات النظام -->
+  <div class="system-announcement hidden" id="systemAnnouncement">
+    📢 إعلان هام: النظام يعمل بكامل طاقته - آخر تحديث: اليوم
+  </div>
+  
+  <!-- إشعارات النظام -->
+  <div class="system-notifications" id="systemNotifications">
+    <!-- سيتم إضافة الإشعارات هنا ديناميكياً -->
+  </div>
+  
+  <!-- التحكم -->
+  <div class="controls no-print">
+    <div class="controls-row">
+      <div class="controls-group">
+        <label>📅 تاريخ اليوم:</label>
+        <input type="date" id="today">
+      </div>
+      <div class="controls-group">
+        <label>⛽ سعة السيارة (لتر):</label>
+        <input type="number" id="capacity" value="33000" min="0" step="100">
+      </div>
+      <div class="controls-group">
+        <label>🔍 تصفية الجهة:</label>
+        <select id="filterEntity">
+          <option value="all">جميع الجهات</option>
+        </select>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchEntity" placeholder="🔍 اكتب للبحث عن جهة..." onkeyup="filterTable()">
+      </div>
+    </div>
+    
+    <!-- الإضافة السريعة للمدير -->
+    <div class="quick-add hidden" id="quickAddSection">
+      <input type="text" id="quickEntityName" placeholder="اسم الجهة الجديدة">
+      <input type="number" id="quickEntityTotal" placeholder="العدد الإجمالي" value="10">
+      <button class="success-btn" onclick="addEntityQuick()">➕ إضافة سريعة</button>
+    </div>
+    
+    <div class="buttons">
+      <button class="primary-btn" onclick="window.print()"><span>🖨️</span> طباعة التقرير</button>
+      <button class="success-btn" onclick="saveAllChanges()"><span>💾</span> حفظ جميع التعديلات</button>
+      <button class="info-btn" onclick="exportDailyExcel()"><span>📤</span> Excel يومي</button>
+      <button class="warning-btn" onclick="showSummary()"><span>📋</span> ملخص الإحصائيات</button>
+      <button class="secondary-btn" onclick="clearAllTodayValues()"><span>🗑️</span> مسح قيم اليوم</button>
+      <button class="danger-btn" onclick="logout()"><span>🚪</span> خروج</button>
+    </div>
+  </div>
+  
+  <!-- الجدول الرئيسي -->
+  <div class="table-container">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th style="min-width: 300px; text-align: right;">الجهة</th>
+          <th style="min-width: 180px;">العدد الإجمالي (سيارة)</th>
+          <th style="min-width: 150px;">تجهيز اليوم (سيارة)</th>
+          <th style="min-width: 150px;">المجموع المنجز (سيارة)</th>
+          <th style="min-width: 150px;">المتبقي (سيارة)</th>
+          <th style="min-width: 250px;">نسبة الإنجاز</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- سيتم ملؤها ديناميكياً -->
+      </tbody>
+      <tfoot id="tableFooter" style="display: none;">
+        <tr style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); font-weight: bold;">
+          <td>الإجماليات</td>
+          <td id="totalTotal">0</td>
+          <td id="totalToday">0</td>
+          <td id="totalDone">0</td>
+          <td id="totalRemain">0</td>
+          <td id="totalPercent">0%</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  
+  <!-- لوحة التحكم الإدارية -->
+  <div class="admin-panel hidden no-print" id="adminPanel">
+    <h4>👑 لوحة التحكم الإدارية المتقدمة</h4>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('entities')">🏭 إدارة الجهات</div>
+      <div class="tab" onclick="switchTab('users')">👥 إدارة المستخدمين</div>
+      <div class="tab" onclick="switchTab('notifications')">🔔 الإشعارات والإعلانات</div>
+      <div class="tab" onclick="switchTab('reports')">📊 التقارير المتقدمة</div>
+      <div class="tab" onclick="switchTab('settings')">⚙️ إعدادات النظام</div>
+      <div class="tab" onclick="switchTab('maintenance')">🔧 صيانة النظام</div>
+    </div>
+    
+    <!-- إدارة الجهات -->
+    <div id="entitiesTab" class="tab-content active">
+      <div class="quick-action-buttons">
+        <button class="success-btn" onclick="showAddEntityModal()">➕ إضافة جهة جديدة</button>
+        <button class="warning-btn" onclick="clearAllEntityTotals()">🗑️ مسح جميع الأعداد</button>
+        <button class="info-btn" onclick="exportEntitiesToExcel()">📤 تصدير الجهات</button>
+        <button class="secondary-btn" onclick="importEntitiesFromExcel()">📥 استيراد جهات</button>
+      </div>
+      
+      <div class="search-box" style="margin-bottom: 20px;">
+        <input type="text" id="searchEntityAdmin" placeholder="🔍 بحث في قائمة الجهات..." onkeyup="filterEntities()">
+      </div>
+      
+      <div class="entities-list" id="entitiesList">
+        <!-- سيتم ملؤها ديناميكياً -->
+      </div>
+      
+      <div class="buttons">
+        <button class="primary-btn" onclick="saveAllEntities()">💾 حفظ جميع التعديلات</button>
+        <button class="danger-btn" onclick="clearAllEntities()">🗑️ حذف جميع الجهات</button>
+      </div>
+    </div>
+    
+    <!-- إدارة المستخدمين -->
+    <div id="usersTab" class="tab-content">
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        <h5 style="margin-top: 0; color: #2c3e50;">إضافة مستخدم جديد</h5>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+          <input type="text" id="newUsername" placeholder="اسم المستخدم" style="flex: 1; min-width: 200px;">
+          <div class="password-field">
+            <input type="password" id="newUserPassword" placeholder="كلمة المرور">
+            <button type="button" class="password-toggle" onclick="togglePassword('newUserPassword', this)">👁️</button>
+          </div>
+          <input type="text" id="newUserName" placeholder="الاسم الكامل">
+          <select id="newUserRole" style="min-width: 150px;">
+            <option value="user">👤 مستخدم عادي</option>
+            <option value="supervisor">👔 مشرف</option>
+            <option value="admin">👑 مدير نظام</option>
+          </select>
+          <button class="success-btn" onclick="addNewUser()">➕ إضافة مستخدم</button>
+        </div>
+      </div>
+      
+      <div class="users-list" id="usersList">
+        <!-- سيتم ملؤها ديناميكياً -->
+      </div>
+      
+      <div class="buttons">
+        <button class="warning-btn" onclick="sendNotificationToAll()">📢 إرسال إشعار للجميع</button>
+        <button class="danger-btn" onclick="resetAllPasswords()">🔄 إعادة تعيين كلمات المرور</button>
+      </div>
+    </div>
+    
+    <!-- الإشعارات والإعلانات -->
+    <div id="notificationsTab" class="tab-content">
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        <h5 style="margin-top: 0; color: #2c3e50;">إرسال إشعار أو إعلان</h5>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <div>
+            <label>نوع الإشعار:</label>
+            <select id="notificationType">
+              <option value="info">معلومات ℹ️</option>
+              <option value="warning">تحذير ⚠️</option>
+              <option value="success">نجاح ✅</option>
+              <option value="danger">هام ❌</option>
+            </select>
+          </div>
+          <div>
+            <label>العنوان:</label>
+            <input type="text" id="notificationTitle" placeholder="عنوان الإشعار" style="width: 100%;">
+          </div>
+          <div>
+            <label>الرسالة:</label>
+            <textarea id="notificationMessage" placeholder="نص الإشعار..." rows="4" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px;"></textarea>
+          </div>
+          <div>
+            <label>المستهدفون:</label>
+            <select id="notificationTarget" style="width: 100%;">
+              <option value="all">جميع المستخدمين</option>
+              <option value="users">المستخدمون فقط</option>
+              <option value="admins">المدراء فقط</option>
+              <option value="specific">مستخدم محدد</option>
+            </select>
+            <select id="specificUser" style="width: 100%; margin-top: 10px; display: none;">
+              <!-- سيتم ملؤها ديناميكياً -->
+            </select>
+          </div>
+          <button class="primary-btn" onclick="sendCustomNotification()">📤 إرسال الإشعار</button>
+        </div>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+        <h5 style="margin-top: 0; color: #2c3e50;">الإعلانات النشطة</h5>
+        <div id="activeAnnouncements">
+          <!-- سيتم ملؤها ديناميكياً -->
+        </div>
+        <button class="success-btn" onclick="addNewAnnouncement()" style="margin-top: 15px;">➕ إضافة إعلان جديد</button>
+      </div>
+    </div>
+    
+    <!-- التقارير المتقدمة -->
+    <div id="reportsTab" class="tab-content">
+      <div class="report-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+          <h5>📊 إحصائيات عامة</h5>
+          <div class="stats-container">
+            <div class="stat-item">
+              <span class="stat-label">عدد الجهات</span>
+              <span class="stat-value" id="totalEntities">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">إجمالي السيارات</span>
+              <span class="stat-value" id="totalCars">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">عدد المستخدمين</span>
+              <span class="stat-value" id="totalUsers">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">نسبة الإنجاز الكلية</span>
+              <span class="stat-value" id="overallProgress">0%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+          <h5>📅 نشاط اليوم</h5>
+          <div class="stats-container">
+            <div class="stat-item">
+              <span class="stat-label">سجلات اليوم</span>
+              <span class="stat-value" id="todayRecords">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">السيارات اليومية</span>
+              <span class="stat-value" id="todayCars">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">المستخدمون النشطون</span>
+              <span class="stat-value" id="activeUsers">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="buttons">
+        <button class="primary-btn" onclick="generateComprehensiveReport()">📄 إنشاء تقرير شامل</button>
+        <button class="success-btn" onclick="exportAllReports()">📤 تصدير جميع التقارير</button>
+      </div>
+    </div>
+    
+    <!-- إعدادات النظام -->
+    <div id="settingsTab" class="tab-content">
+      <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-bottom: 30px;">
+        <h5 style="margin-top: 0; color: #2c3e50;">⚙️ إعدادات النظام المتقدمة</h5>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <div>
+            <label>اسم النظام:</label>
+            <input type="text" id="systemName" value="نظام تجهيز الوقود" style="width: 100%;">
+          </div>
+          
+          <div>
+            <label>السعة الافتراضية (لتر):</label>
+            <input type="number" id="defaultCapacity" value="33000" style="width: 100%;">
+          </div>
+          
+          <div>
+            <label>عرض الإشعارات:</label>
+            <select id="showNotifications" style="width: 100%;">
+              <option value="true">تفعيل ✅</option>
+              <option value="false">تعطيل ❌</option>
+            </select>
+          </div>
+          
+          <div>
+            <label>النسخ التلقائي:</label>
+            <select id="autoBackup" style="width: 100%;">
+              <option value="daily">يومياً</option>
+              <option value="weekly">أسبوعياً</option>
+              <option value="monthly">شهرياً</option>
+              <option value="never">معطل</option>
+            </select>
+          </div>
+          
+          <div>
+            <label>لون النظام:</label>
+            <select id="systemTheme" style="width: 100%;">
+              <option value="blue">أزرق 🔵</option>
+              <option value="green">أخضر 🟢</option>
+              <option value="purple">بنفسجي 🟣</option>
+              <option value="dark">داكن ⚫</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="buttons">
+        <button class="primary-btn" onclick="saveSystemSettings()">💾 حفظ الإعدادات</button>
+        <button class="secondary-btn" onclick="resetSystemSettings()">🔄 استعادة الافتراضي</button>
+      </div>
+    </div>
+    
+    <!-- صيانة النظام -->
+    <div id="maintenanceTab" class="tab-content">
+      <div class="danger-zone">
+        <h5>⚠️ منطقة الخطر - إدارة البيانات</h5>
+        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+          هذه المنطقة تحتوي على إجراءات لا يمكن التراجع عنها. كن حذراً.
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-top: 15px;">
+          <button class="danger-btn" onclick="deleteTodayData()" style="padding: 10px;">
+            🗑️ مسح سجلات اليوم فقط
+          </button>
+          
+          <button class="danger-btn" onclick="deleteAllLogs()" style="padding: 10px;">
+            📋 مسح جميع السجلات
+          </button>
+          
+          <button class="danger-btn" onclick="deleteAllEntities()" style="padding: 10px;">
+            🏭 مسح جميع الجهات
+          </button>
+          
+          <button class="danger-btn" onclick="deleteAllNotifications()" style="padding: 10px;">
+            🔔 مسح جميع الإشعارات
+          </button>
+          
+          <button class="danger-btn" onclick="resetAllSettings()" style="padding: 10px;">
+            ⚙️ استعادة الإعدادات الافتراضية
+          </button>
+          
+          <button class="danger-btn" onclick="deleteAllData()" style="padding: 10px; background: linear-gradient(135deg, #d32f2f, #b71c1c);">
+            💣 مسح جميع بيانات النظام
+          </button>
+        </div>
+        
+        <p style="font-size: 12px; color: #999; margin-top: 10px;">
+          ملاحظة: مسح البيانات سيؤثر على جميع المستخدمين وليس فقط حسابك الحالي.
+        </p>
+      </div>
+      
+      <div class="backup-zone">
+        <h5>💾 النسخ الاحتياطي والاستعادة</h5>
+        <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+          يمكنك تصدير نسخة احتياطية من بيانات النظام لاستخدامها لاحقاً.
+        </p>
+        
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="primary-btn" onclick="exportCurrentData()" style="padding: 10px;">
+            📤 تصدير نسخة احتياطية
+          </button>
+          <button class="secondary-btn" onclick="importBackupData()" style="padding: 10px;">
+            📥 استيراد نسخة احتياطية
+          </button>
+        </div>
+        
+        <div class="stats-container" style="margin-top: 20px;">
+          <div class="stat-item">
+            <span class="stat-label">حجم البيانات</span>
+            <span class="stat-value" id="dataSize">0 KB</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">آخر نسخة</span>
+            <span class="stat-value" id="lastBackup">--</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">آخر مسح</span>
+            <span class="stat-value" id="lastCleanup">--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة إضافة جهة -->
+<div id="addEntityModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>➕ إضافة جهة جديدة</h3>
+    <div style="margin: 20px 0;">
+      <input type="text" id="modalEntityName" placeholder="اسم الجهة" style="width: 100%; margin-bottom: 15px;">
+      <input type="number" id="modalEntityTotal" placeholder="العدد الإجمالي" value="10" style="width: 100%; margin-bottom: 15px;">
+      <button class="success-btn" onclick="addEntityFromModal()" style="width: 100%;">إضافة</button>
+    </div>
+    <div style="text-align: center;">
+      <button class="secondary-btn" onclick="closeAddEntityModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة تبديل المستخدم -->
+<div id="switchUserModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>🔄 تبديل حساب المستخدم</h3>
+    <div id="switchUserList" style="max-height: 300px; overflow-y: auto; margin: 20px 0;">
+      <!-- سيتم ملؤها ديناميكياً -->
+    </div>
+    <div style="text-align: center;">
+      <button class="secondary-btn" onclick="closeSwitchUserModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة الملخص -->
+<div id="summaryModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>📋 ملخص الإحصائيات المتقدم</h3>
+    <div id="summaryContent"></div>
+    <div style="text-align: center; margin-top: 30px;">
+      <button class="primary-btn" onclick="closeSummary()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة التأكيد -->
+<div id="confirmDialog" class="modal hidden">
+  <div class="confirm-dialog">
+    <h4 id="confirmTitle">تأكيد الإجراء</h4>
+    <p id="confirmMessage">هل أنت متأكد من تنفيذ هذا الإجراء؟</p>
+    <div class="confirm-buttons">
+      <button class="danger-btn" id="confirmYes">نعم</button>
+      <button class="secondary-btn" id="confirmNo">لا</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== إعدادات النظام =====
+let SYSTEM_SETTINGS = JSON.parse(localStorage.getItem("fuelSystemSettings") || `{
+  "systemName": "نظام تجهيز الوقود المتقدم",
+  "defaultCapacity": 33000,
+  "showNotifications": true,
+  "autoBackup": "daily",
+  "theme": "blue",
+  "language": "ar",
+  "quickAdd": true,
+  "autoSave": true
+}`);
+
+// ===== بيانات النظام =====
+let USERS = JSON.parse(localStorage.getItem("fuelSystemUsers") || `{
+  "admin": {
+    "pass": "admin123",
+    "role": "admin",
+    "name": "المدير العام",
+    "createdAt": "${new Date().toISOString()}",
+    "lastLogin": null,
+    "permissions": ["all"]
+  },
+  "supervisor": {
+    "pass": "super123",
+    "role": "supervisor",
+    "name": "المشرف الرئيسي",
+    "createdAt": "${new Date().toISOString()}",
+    "lastLogin": null,
+    "permissions": ["view", "edit", "reports"]
+  },
+  "user1": {
+    "pass": "user123",
+    "role": "user",
+    "name": "مستخدم 1",
+    "createdAt": "${new Date().toISOString()}",
+    "lastLogin": null,
+    "permissions": ["view", "add"]
+  },
+  "user2": {
+    "pass": "user456",
+    "role": "user",
+    "name": "مستخدم 2",
+    "createdAt": "${new Date().toISOString()}",
+    "lastLogin": null,
+    "permissions": ["view", "add"]
+  },
+  "user3": {
+    "pass": "user789",
+    "role": "user",
+    "name": "مستخدم 3",
+    "createdAt": "${new Date().toISOString()}",
+    "lastLogin": null,
+    "permissions": ["view", "add"]
+  }
+}`);
+
+let CURRENT_USER = null;
+let CURRENT_ROLE = null;
+let LOGS = JSON.parse(localStorage.getItem("fuelLogs") || "[]");
+let ENTITIES = JSON.parse(localStorage.getItem("fuelEntities") || "[]");
+let NOTIFICATIONS = JSON.parse(localStorage.getItem("fuelNotifications") || "[]");
+let ANNOUNCEMENTS = JSON.parse(localStorage.getItem("fuelAnnouncements") || "[]");
+
+// ===== دوال مساعدة =====
+function showNotification(message, type = 'info', duration = 5000) {
+  if (!SYSTEM_SETTINGS.showNotifications && type !== 'danger') return;
+  
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = `
+    ${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}
+    <span>${message}</span>
+    <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.remove();
+    }
+  }, duration);
+}
+
+function getColorForPercentage(percent) {
+  if (percent >= 80) return '#27ae60';
+  if (percent >= 50) return '#f39c12';
+  if (percent >= 20) return '#e67e22';
+  return '#e74c3c';
+}
+
+function calculatePercentage(done, total) {
+  if (total === 0) return 0;
+  return Math.round((done / total) * 100);
+}
+
+function getRoleName(role) {
+  const roles = {
+    'admin': 'مدير النظام',
+    'supervisor': 'مشرف',
+    'user': 'مستخدم'
+  };
+  return roles[role] || role;
+}
+
+// ===== إدارة الجهات =====
+function loadEntitiesToTable() {
+  const tableBody = document.getElementById('tableBody');
+  tableBody.innerHTML = '';
+  
+  ENTITIES.forEach((entity, index) => {
+    const entityLogs = LOGS.filter(l => l.entity === entity.name && l.type === 'fuel');
+    const done = entityLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+    const percent = calculatePercentage(done, entity.total);
+    const progressColor = getColorForPercentage(percent);
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td style="text-align: right; font-weight: bold;">${entity.name}</td>
+      <td>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="number" class="total-input" data-index="${index}" value="${entity.total}" min="0" 
+                 ${CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'supervisor' ? '' : 'readonly style="background: #f5f5f5;"'}>
+          ${CURRENT_ROLE === 'admin' ? `<button class="clear-btn" onclick="clearEntityTotal(${index})">مسح</button>` : ''}
+        </div>
+      </td>
+      <td><input type="number" class="today-input" data-index="${index}" value="0" min="0"></td>
+      <td class="done" data-index="${index}">${done}</td>
+      <td class="remain" data-index="${index}">${Math.max(0, entity.total - done)}</td>
+      <td>
+        <div class="progress-container">
+          <div class="progress-bar" data-index="${index}" style="width: ${percent}%; background: ${progressColor};">
+            <div class="progress-text">${percent}%</div>
+          </div>
+        </div>
+        <div class="percent">${done} / ${entity.total} (${percent}%)</div>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+  
+  attachTableListeners();
+  updateTotals();
+}
+
+function loadEntitiesToFilter() {
+  const filterSelect = document.getElementById('filterEntity');
+  filterSelect.innerHTML = '<option value="all">جميع الجهات</option>';
+  
+  ENTITIES.forEach(entity => {
+    const option = document.createElement('option');
+    option.value = entity.name;
+    option.textContent = entity.name;
+    filterSelect.appendChild(option);
+  });
+}
+
+function filterTable() {
+  const filterValue = document.getElementById('filterEntity').value;
+  const searchValue = document.getElementById('searchEntity').value.toLowerCase();
+  const rows = document.querySelectorAll('#tableBody tr');
+  
+  rows.forEach(row => {
+    const entityName = row.cells[0].textContent.toLowerCase();
+    const entityNameOriginal = row.cells[0].textContent;
+    
+    let shouldShow = true;
+    
+    if (filterValue !== 'all' && entityNameOriginal !== filterValue) {
+      shouldShow = false;
+    }
+    
+    if (searchValue && !entityName.includes(searchValue)) {
+      shouldShow = false;
+    }
+    
+    row.style.display = shouldShow ? '' : 'none';
+  });
+}
+
+function attachTableListeners() {
+  const tableBody = document.getElementById('tableBody');
+  
+  tableBody.addEventListener('change', function(e) {
+    if (e.target.classList.contains('today-input')) {
+      const index = e.target.getAttribute('data-index');
+      const todayVal = parseFloat(e.target.value) || 0;
+      
+      if (todayVal > 0) {
+        const entity = ENTITIES[index].name;
+        const todayDate = document.getElementById('today').value;
+        
+        LOGS.push({
+          type: 'fuel',
+          user: CURRENT_USER,
+          userDisplay: USERS[CURRENT_USER]?.name || CURRENT_USER,
+          date: todayDate,
+          time: new Date().toLocaleTimeString(),
+          entity: entity,
+          cars: todayVal,
+          liters: todayVal * parseFloat(document.getElementById('capacity').value || 33000)
+        });
+        
+        localStorage.setItem("fuelLogs", JSON.stringify(LOGS));
+        updateRow(index);
+        e.target.value = 0;
+        
+        showNotification(`تم تسجيل ${todayVal} سيارة لـ ${entity}`, 'success');
+      }
+    }
+    
+    if (e.target.classList.contains('total-input')) {
+      const index = e.target.getAttribute('data-index');
+      const newTotal = parseFloat(e.target.value) || 0;
+      
+      if (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'supervisor') {
+        ENTITIES[index].total = newTotal;
+        localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+        updateRow(index);
+        
+        // حفظ تلقائي إذا كان مفعلاً
+        if (SYSTEM_SETTINGS.autoSave) {
+          showNotification('تم حفظ التعديل تلقائياً', 'info', 2000);
+        }
+      }
+    }
+  });
+}
+
+function updateRow(index) {
+  const entity = ENTITIES[index].name;
+  const total = ENTITIES[index].total;
+  
+  const entityLogs = LOGS.filter(l => l.entity === entity && l.type === 'fuel');
+  const done = entityLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+  const remain = Math.max(0, total - done);
+  const percent = calculatePercentage(done, total);
+  const progressColor = getColorForPercentage(percent);
+  
+  const doneCell = document.querySelector(`.done[data-index="${index}"]`);
+  const remainCell = document.querySelector(`.remain[data-index="${index}"]`);
+  const progressBar = document.querySelector(`.progress-bar[data-index="${index}"]`);
+  const percentText = document.querySelector(`.percent[data-index="${index}"]`);
+  
+  if (doneCell) doneCell.textContent = done;
+  if (remainCell) remainCell.textContent = remain;
+  if (progressBar) {
+    progressBar.style.width = percent + '%';
+    progressBar.style.background = progressColor;
+    progressBar.querySelector('.progress-text').textContent = percent + '%';
+  }
+  if (percentText) percentText.textContent = `${done} / ${total} (${percent}%)`;
+}
+
+function updateAllRows() {
+  ENTITIES.forEach((_, index) => {
+    updateRow(index);
+  });
+  updateTotals();
+}
+
+function updateTotals() {
+  const totalTotal = ENTITIES.reduce((sum, entity) => sum + entity.total, 0);
+  const totalDone = ENTITIES.reduce((sum, entity, index) => {
+    const entityLogs = LOGS.filter(l => l.entity === entity.name && l.type === 'fuel');
+    return sum + entityLogs.reduce((s, l) => s + (parseFloat(l.cars) || 0), 0);
+  }, 0);
+  const totalRemain = Math.max(0, totalTotal - totalDone);
+  const totalPercent = calculatePercentage(totalDone, totalTotal);
+  
+  document.getElementById('totalTotal').textContent = totalTotal;
+  document.getElementById('totalDone').textContent = totalDone;
+  document.getElementById('totalRemain').textContent = totalRemain;
+  document.getElementById('totalPercent').textContent = totalPercent + '%';
+  
+  // إظهار التذييل
+  document.getElementById('tableFooter').style.display = '';
+}
+
+// ===== إدارة الجهات المتقدمة =====
+function loadEntitiesList() {
+  const entitiesList = document.getElementById('entitiesList');
+  entitiesList.innerHTML = '';
+  
+  ENTITIES.forEach((entity, index) => {
+    const entityItem = document.createElement('div');
+    entityItem.className = 'entity-item';
+    entityItem.innerHTML = `
+      <div class="entity-name">${entity.name}</div>
+      <div class="entity-actions">
+        <input type="number" id="entityTotal${index}" value="${entity.total}" style="width: 100px;">
+        <button class="primary-btn" onclick="updateEntity(${index})">تعديل</button>
+        <button class="danger-btn" onclick="deleteEntity(${index})">حذف</button>
+      </div>
+    `;
+    entitiesList.appendChild(entityItem);
+  });
+}
+
+function filterEntities() {
+  const searchValue = document.getElementById('searchEntityAdmin').value.toLowerCase();
+  const entityItems = document.querySelectorAll('.entity-item');
+  
+  entityItems.forEach(item => {
+    const entityName = item.querySelector('.entity-name').textContent.toLowerCase();
+    if (searchValue && !entityName.includes(searchValue)) {
+      item.style.display = 'none';
+    } else {
+      item.style.display = 'flex';
+    }
+  });
+}
+
+function showAddEntityModal() {
+  document.getElementById('addEntityModal').classList.remove('hidden');
+}
+
+function addEntityFromModal() {
+  const name = document.getElementById('modalEntityName').value.trim();
+  const total = parseInt(document.getElementById('modalEntityTotal').value) || 10;
+  
+  if (!name) {
+    showNotification('يرجى إدخال اسم الجهة', 'error');
+    return;
+  }
+  
+  if (ENTITIES.some(e => e.name === name)) {
+    showNotification('هذه الجهة موجودة بالفعل', 'error');
+    return;
+  }
+  
+  ENTITIES.push({ name, total });
+  localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+  
+  // تحديث الواجهة
+  loadEntitiesToTable();
+  loadEntitiesToFilter();
+  loadEntitiesList();
+  
+  closeAddEntityModal();
+  showNotification(`تم إضافة "${name}" بنجاح`, 'success');
+}
+
+function closeAddEntityModal() {
+  document.getElementById('modalEntityName').value = '';
+  document.getElementById('modalEntityTotal').value = '10';
+  document.getElementById('addEntityModal').classList.add('hidden');
+}
+
+function updateEntity(index) {
+  const newTotal = parseFloat(document.getElementById(`entityTotal${index}`).value) || 0;
+  
+  if (newTotal < 0) {
+    showNotification("العدد يجب أن يكون موجباً", 'error');
+    return;
+  }
+  
+  ENTITIES[index].total = newTotal;
+  localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+  
+  // تحديث الواجهة
+  loadEntitiesToTable();
+  updateAllRows();
+  
+  showNotification("تم تعديل الجهة بنجاح", 'success');
+}
+
+function deleteEntity(index) {
+  if (confirm(`هل أنت متأكد من حذف جهة "${ENTITIES[index].name}"؟`)) {
+    ENTITIES.splice(index, 1);
+    localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+    
+    // تحديث الواجهة
+    loadEntitiesToTable();
+    loadEntitiesToFilter();
+    loadEntitiesList();
+    
+    showNotification("تم حذف الجهة بنجاح", 'success');
+  }
+}
+
+function clearAllEntities() {
+  if (confirm("هل أنت متأكد من حذف جميع الجهات؟ هذا الإجراء لا يمكن التراجع عنه.")) {
+    ENTITIES = [];
+    localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+    
+    // تحديث الواجهة
+    loadEntitiesToTable();
+    loadEntitiesToFilter();
+    loadEntitiesList();
+    
+    showNotification("تم حذف جميع الجهات", 'success');
+  }
+}
+
+function saveAllEntities() {
+  const totalInputs = document.querySelectorAll('.total-input');
+  let hasChanges = false;
+  
+  totalInputs.forEach((input, index) => {
+    const newTotal = parseFloat(input.value) || 0;
+    if (newTotal !== ENTITIES[index].total) {
+      ENTITIES[index].total = newTotal;
+      hasChanges = true;
+    }
+  });
+  
+  if (hasChanges) {
+    localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+    
+    // تسجيل النشاط
+    LOGS.push({
+      type: 'system',
+      user: CURRENT_USER,
+      userDisplay: USERS[CURRENT_USER]?.name || CURRENT_USER,
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString(),
+      action: 'تعديل جميع الجهات'
+    });
+    localStorage.setItem("fuelLogs", JSON.stringify(LOGS));
+    
+    updateAllRows();
+    showNotification('تم حفظ جميع التعديلات بنجاح', 'success');
+  } else {
+    showNotification('لا توجد تغييرات للحفظ', 'info');
+  }
+}
+
+function clearEntityTotal(index) {
+  if (confirm(`هل تريد مسح العدد الإجمالي لـ "${ENTITIES[index].name}"؟`)) {
+    ENTITIES[index].total = 0;
+    localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+    updateRow(index);
+    showNotification('تم مسح العدد الإجمالي', 'success');
+  }
+}
+
+function clearAllEntityTotals() {
+  if (confirm('هل تريد مسح جميع الأعداد الإجمالية للجهات؟')) {
+    ENTITIES.forEach(entity => {
+      entity.total = 0;
+    });
+    localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+    updateAllRows();
+    showNotification('تم مسح جميع الأعداد الإجمالية', 'success');
+  }
+}
+
+function clearAllTodayValues() {
+  const inputs = document.querySelectorAll('.today-input');
+  inputs.forEach(input => {
+    input.value = 0;
+  });
+  showNotification('تم مسح جميع قيم اليوم', 'success');
+}
+
+// ===== إضافة جهة سريعة =====
+function addEntityQuick() {
+  const name = document.getElementById('quickEntityName').value.trim();
+  const total = parseInt(document.getElementById('quickEntityTotal').value) || 10;
+  
+  if (!name) {
+    showNotification('يرجى إدخال اسم الجهة', 'error');
+    return;
+  }
+  
+  if (ENTITIES.some(e => e.name === name)) {
+    showNotification('هذه الجهة موجودة بالفعل', 'error');
+    return;
+  }
+  
+  ENTITIES.push({ name, total });
+  localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+  
+  // تحديث الواجهة
+  loadEntitiesToTable();
+  loadEntitiesToFilter();
+  if (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'supervisor') {
+    loadEntitiesList();
+  }
+  
+  // إعادة تعيين الحقول
+  document.getElementById('quickEntityName').value = '';
+  document.getElementById('quickEntityTotal').value = '10';
+  
+  showNotification(`تم إضافة "${name}" بنجاح`, 'success');
+}
+
+// ===== دوال التصدير =====
+function exportEntitiesToExcel() {
+  const rows = [["اسم الجهة", "العدد الإجمالي", "المنجز", "المتبقي", "نسبة الإنجاز"]];
+  
+  ENTITIES.forEach(entity => {
+    const entityLogs = LOGS.filter(l => l.entity === entity.name && l.type === 'fuel');
+    const done = entityLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+    const remain = Math.max(0, entity.total - done);
+    const percent = calculatePercentage(done, entity.total);
+    
+    rows.push([entity.name, entity.total, done, remain, percent + '%']);
+  });
+  
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "الجهات");
+  XLSX.writeFile(wb, `جهات_النظام_${new Date().toISOString().slice(0,10)}.xlsx`);
+  
+  showNotification("تم تصدير بيانات الجهات بنجاح", 'success');
+}
+
+function importEntitiesFromExcel() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.xlsx, .xls';
+  
+  input.onchange = function(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(event) {
+      try {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        // تخطي العنوان
+        const importedEntities = [];
+        for (let i = 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          if (row && row[0]) {
+            // تحويل القيم العشرية إلى أعداد صحيحة باستخدام Math.round
+            let totalValue = parseFloat(row[1]) || 0;
+            // إذا كانت القيمة أقل من 1 (كسرية)، يتم تقريبها إلى 1
+            totalValue = totalValue < 1 ? 1 : Math.round(totalValue);
+            
+            importedEntities.push({
+              name: row[0].toString().trim(),
+              total: totalValue
+            });
+          }
+        }
+        
+        if (confirm(`تم العثور على ${importedEntities.length} جهة. هل تريد استيرادها؟`)) {
+          ENTITIES = importedEntities;
+          localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+          
+          // تحديث الواجهة
+          loadEntitiesToTable();
+          loadEntitiesToFilter();
+          loadEntitiesList();
+          
+          showNotification(`تم استيراد ${importedEntities.length} جهة بنجاح`, 'success');
+        }
+      } catch (error) {
+        showNotification("فشل في استيراد الملف. تأكد من صحة التنسيق", 'error');
+      }
+    };
+    
+    reader.readAsArrayBuffer(file);
+  };
+  
+  input.click();
+}
+
+function exportDailyExcel() {
+  const day = document.getElementById('today').value;
+  const capacity = parseFloat(document.getElementById('capacity').value) || 33000;
+  
+  const rows = [["المستخدم", "الاسم", "التاريخ", "الجهة", "تجهيز اليوم (سيارة)", "اللترات", "الوقت"]];
+  
+  // الحصول على سجلات اليوم
+  const dailyLogs = LOGS.filter(l => l.date === day && l.type === 'fuel');
+  
+  if (dailyLogs.length === 0) {
+    showNotification("لا توجد سجلات لهذا اليوم", 'warning');
+    return;
+  }
+  
+  dailyLogs.forEach(l => {
+    const liters = l.liters || (l.cars * capacity);
+    rows.push([l.user, l.userDisplay, l.date, l.entity, l.cars, liters, l.time]);
+  });
+  
+  // إضافة الصفوف الإجمالية
+  rows.push([]);
+  rows.push(["الجهة", "السيارات اليومية", "اللترات"]);
+  
+  // حساب الإجمالي لكل جهة
+  const carTotals = {};
+  const literTotals = {};
+  
+  dailyLogs.forEach(l => {
+    if (!carTotals[l.entity]) carTotals[l.entity] = 0;
+    if (!literTotals[l.entity]) literTotals[l.entity] = 0;
+    
+    carTotals[l.entity] += parseFloat(l.cars) || 0;
+    literTotals[l.entity] += parseFloat(l.liters) || (l.cars * capacity);
+  });
+  
+  Object.keys(carTotals).forEach(entity => {
+    rows.push([entity, carTotals[entity], literTotals[entity]]);
+  });
+  
+  // إجمالي اليوم
+  const dayCarsTotal = dailyLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+  const dayLitersTotal = dailyLogs.reduce((sum, l) => sum + (parseFloat(l.liters) || (l.cars * capacity)), 0);
+  
+  rows.push([]);
+  rows.push(["الإجمالي اليومي", dayCarsTotal + " سيارة", dayLitersTotal + " لتر"]);
+  
+  // إنشاء الملف
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "تقرير يومي");
+  XLSX.writeFile(wb, `تقرير_يومي_${day}.xlsx`);
+  
+  showNotification("تم تصدير التقرير اليومي بنجاح", 'success');
+}
+
+// ===== إدارة المستخدمين والصلاحيات =====
+function loadUsersList() {
+  const usersList = document.getElementById('usersList');
+  usersList.innerHTML = '';
+  
+  Object.keys(USERS).forEach(username => {
+    const user = USERS[username];
+    const userItem = document.createElement('div');
+    userItem.className = 'user-item';
+    userItem.innerHTML = `
+      <div style="flex: 1;">
+        <div style="font-weight: bold; color: #2c3e50;">${user.name} (@${username})</div>
+        <div style="font-size: 12px; color: #7f8c8d;">${getRoleName(user.role)}</div>
+        <div style="font-size: 11px; color: #999;">
+          آخر دخول: ${user.lastLogin ? new Date(user.lastLogin).toLocaleString('ar-IQ') : 'لم يسجل دخول'}
+        </div>
+      </div>
+      <div style="display: flex; gap: 5px;">
+        <button class="primary-btn" onclick="editUserModal('${username}')" style="padding: 5px 10px; font-size: 12px;">✏️ تعديل</button>
+        <button class="warning-btn" onclick="resetPasswordModal('${username}')" style="padding: 5px 10px; font-size: 12px;">🔑 كلمة مرور</button>
+        ${username !== CURRENT_USER && username !== 'admin' ? 
+          `<button class="danger-btn" onclick="deleteUser('${username}')" style="padding: 5px 10px; font-size: 12px;">🗑️ حذف</button>` : 
+          ''
+        }
+      </div>
+    `;
+    usersList.appendChild(userItem);
+  });
+}
+
+function togglePassword(fieldId, button) {
+  const field = document.getElementById(fieldId);
+  if (field.type === 'password') {
+    field.type = 'text';
+    button.textContent = '🙈';
+  } else {
+    field.type = 'password';
+    button.textContent = '👁️';
+  }
+}
+
+function addNewUser() {
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newUserPassword').value.trim();
+  const role = document.getElementById('newUserRole').value;
+  const name = document.getElementById('newUserName').value.trim();
+  
+  if (!username || !password || !name) {
+    showNotification("يرجى ملء جميع الحقول", 'error');
+    return;
+  }
+  
+  if (USERS[username]) {
+    showNotification("اسم المستخدم موجود بالفعل", 'error');
+    return;
+  }
+  
+  if (password.length < 6) {
+    showNotification("كلمة المرور يجب أن تكون 6 أحرف على الأقل", 'error');
+    return;
+  }
+  
+  USERS[username] = {
+    pass: password,
+    role: role,
+    name: name,
+    createdAt: new Date().toISOString(),
+    lastLogin: null
+  };
+  
+  localStorage.setItem("fuelSystemUsers", JSON.stringify(USERS));
+  
+  // تحديث القائمة
+  loadUsersList();
+  
+  // إعادة تعيين الحقول
+  document.getElementById('newUsername').value = '';
+  document.getElementById('newUserPassword').value = '';
+  document.getElementById('newUserName').value = '';
+  
+  showNotification(`تم إضافة المستخدم ${name} بنجاح`, 'success');
+}
+
+function editUserModal(username) {
+  const user = USERS[username];
+  const newName = prompt(`الاسم الجديد لـ ${username}:`, user.name);
+  if (newName && newName.trim()) {
+    const newRole = prompt(`الدور الجديد (admin/supervisor/user):`, user.role);
+    if (newRole && ['admin', 'supervisor', 'user'].includes(newRole)) {
+      USERS[username].name = newName.trim();
+      USERS[username].role = newRole;
+      localStorage.setItem("fuelSystemUsers", JSON.stringify(USERS));
+      loadUsersList();
+      showNotification(`تم تحديث بيانات ${username}`, 'success');
+    }
+  }
+}
+
+function resetPasswordModal(username) {
+  const newPassword = prompt(`كلمة المرور الجديدة لـ ${username} (6 أحرف على الأقل):`, "");
+  if (newPassword && newPassword.trim() && newPassword.length >= 6) {
+    USERS[username].pass = newPassword.trim();
+    localStorage.setItem("fuelSystemUsers", JSON.stringify(USERS));
+    showNotification(`تم تحديث كلمة مرور ${username}`, 'success');
+  } else if (newPassword) {
+    showNotification("كلمة المرور يجب أن تكون 6 أحرف على الأقل", 'error');
+  }
+}
+
+function resetAllPasswords() {
+  if (confirm("هل أنت متأكد من إعادة تعيين كلمات مرور جميع المستخدمين؟ سيتم تعيين كلمة مرور '123456' للجميع.")) {
+    Object.keys(USERS).forEach(username => {
+      USERS[username].pass = "123456";
+    });
+    localStorage.setItem("fuelSystemUsers", JSON.stringify(USERS));
+    showNotification("تم إعادة تعيين كلمات مرور جميع المستخدمين إلى 123456", 'success');
+  }
+}
+
+function deleteUser(username) {
+  if (confirm(`هل أنت متأكد من حذف المستخدم ${username}؟`)) {
+    delete USERS[username];
+    localStorage.setItem("fuelSystemUsers", JSON.stringify(USERS));
+    loadUsersList();
+    showNotification(`تم حذف المستخدم ${username}`, 'success');
+  }
+}
+
+// ===== تبديل المستخدم =====
+function switchUser() {
+  const modal = document.getElementById('switchUserModal');
+  const list = document.getElementById('switchUserList');
+  list.innerHTML = '';
+  
+  Object.keys(USERS).forEach(username => {
+    const user = USERS[username];
+    if (username !== CURRENT_USER) {
+      const userItem = document.createElement('div');
+      userItem.className = 'entity-item';
+      userItem.innerHTML = `
+        <div style="flex: 1;">
+          <div style="font-weight: bold;">${user.name} (@${username})</div>
+          <div style="font-size: 12px; color: #666;">${getRoleName(user.role)}</div>
+        </div>
+        <button class="primary-btn" onclick="loginAsUser('${username}')" style="padding: 5px 10px; font-size: 12px;">🔓 الدخول</button>
+      `;
+      list.appendChild(userItem);
+    }
+  });
+  
+  modal.classList.remove('hidden');
+}
+
+function loginAsUser(username) {
+  CURRENT_USER = username;
+  CURRENT_ROLE = USERS[username].role;
+  
+  // تحديث الواجهة
+  updateUserDisplay();
+  initSystem();
+  
+  // إغلاق النافذة
+  closeSwitchUserModal();
+  
+  showNotification(`تم الدخول كـ ${USERS[username].name}`, 'success');
+}
+
+function closeSwitchUserModal() {
+  document.getElementById('switchUserModal').classList.add('hidden');
+}
+
+function updateUserDisplay() {
+  const userDisplay = document.getElementById('currentUserDisplay');
+  const roleDisplay = document.getElementById('userRoleDisplay');
+  const roleBadge = document.getElementById('roleBadge');
+  
+  const user = USERS[CURRENT_USER];
+  userDisplay.textContent = user.name;
+  roleDisplay.textContent = getRoleName(user.role);
+  
+  roleBadge.innerHTML = user.role === 'admin' ? 
+    '<span class="admin-badge">👑 مدير النظام</span>' :
+    user.role === 'supervisor' ?
+    '<span class="user-badge" style="background: #9b59b6;">👔 مشرف</span>' :
+    '<span class="user-badge">👤 مستخدم</span>';
+}
+
+// ===== الإشعارات والإعلانات =====
+function loadNotifications() {
+  const container = document.getElementById('systemNotifications');
+  container.innerHTML = '';
+  
+  const userNotifications = NOTIFICATIONS.filter(n => 
+    n.target === 'all' || 
+    n.target === CURRENT_ROLE || 
+    n.target === CURRENT_USER
+  ).slice(-5); // آخر 5 إشعارات
+  
+  userNotifications.forEach(notification => {
+    const item = document.createElement('div');
+    item.className = `notification-item ${notification.type}`;
+    item.innerHTML = `
+      <div class="notification-header">
+        <div class="notification-title">${notification.title}</div>
+        <div class="notification-time">${new Date(notification.timestamp).toLocaleTimeString('ar-IQ')}</div>
+        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+      </div>
+      <div>${notification.message}</div>
+      <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">
+        من: ${notification.senderName}
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function loadAnnouncements() {
+  const announcementsContainer = document.getElementById('activeAnnouncements');
+  const systemAnnouncement = document.getElementById('systemAnnouncement');
+  
+  if (ANNOUNCEMENTS.length > 0) {
+    systemAnnouncement.textContent = ANNOUNCEMENTS[ANNOUNCEMENTS.length - 1].message;
+    systemAnnouncement.classList.remove('hidden');
+  } else {
+    systemAnnouncement.classList.add('hidden');
+  }
+  
+  announcementsContainer.innerHTML = '';
+  ANNOUNCEMENTS.forEach((announcement, index) => {
+    const announcementItem = document.createElement('div');
+    announcementItem.className = 'entity-item';
+    announcementItem.innerHTML = `
+      <div style="flex: 1;">
+        <div style="font-weight: bold;">${announcement.title}</div>
+        <div style="font-size: 12px; color: #666;">${announcement.message}</div>
+        <div style="font-size: 11px; color: #999;">${new Date(announcement.date).toLocaleDateString('ar-IQ')}</div>
+      </div>
+      <button class="danger-btn" onclick="deleteAnnouncement(${index})" style="padding: 5px 10px; font-size: 12px;">حذف</button>
+    `;
+    announcementsContainer.appendChild(announcementItem);
+  });
+}
+
+function sendNotificationToAll() {
+  const title = prompt('عنوان الإشعار:');
+  if (!title) return;
+  
+  const message = prompt('نص الإشعار:');
+  if (!message) return;
+  
+  NOTIFICATIONS.push({
+    id: Date.now(),
+    type: 'info',
+    title: title,
+    message: message,
+    sender: CURRENT_USER,
+    senderName: USERS[CURRENT_USER]?.name,
+    timestamp: new Date().toISOString(),
+    read: false,
+    target: 'all'
+  });
+  
+  localStorage.setItem("fuelNotifications", JSON.stringify(NOTIFICATIONS));
+  loadNotifications();
+  showNotification('تم إرسال الإشعار لجميع المستخدمين', 'success');
+}
+
+function sendCustomNotification() {
+  const type = document.getElementById('notificationType').value;
+  const title = document.getElementById('notificationTitle').value;
+  const message = document.getElementById('notificationMessage').value;
+  const target = document.getElementById('notificationTarget').value;
+  
+  if (!title || !message) {
+    showNotification('يرجى تعبئة جميع الحقول', 'error');
+    return;
+  }
+  
+  NOTIFICATIONS.push({
+    id: Date.now(),
+    type: type,
+    title: title,
+    message: message,
+    sender: CURRENT_USER,
+    senderName: USERS[CURRENT_USER]?.name,
+    timestamp: new Date().toISOString(),
+    read: false,
+    target: target
+  });
+  
+  localStorage.setItem("fuelNotifications", JSON.stringify(NOTIFICATIONS));
+  loadNotifications();
+  showNotification('تم إرسال الإشعار بنجاح', 'success');
+  
+  // إعادة تعيين الحقول
+  document.getElementById('notificationTitle').value = '';
+  document.getElementById('notificationMessage').value = '';
+}
+
+function addNewAnnouncement() {
+  const title = prompt('عنوان الإعلان:');
+  if (!title) return;
+  
+  const message = prompt('نص الإعلان:');
+  if (!message) return;
+  
+  ANNOUNCEMENTS.push({
+    title: title,
+    message: message,
+    date: new Date().toISOString(),
+    createdBy: CURRENT_USER
+  });
+  
+  localStorage.setItem("fuelAnnouncements", JSON.stringify(ANNOUNCEMENTS));
+  loadAnnouncements();
+  showNotification('تم إضافة الإعلان بنجاح', 'success');
+}
+
+function deleteAnnouncement(index) {
+  if (confirm('هل تريد حذف هذا الإعلان؟')) {
+    ANNOUNCEMENTS.splice(index, 1);
+    localStorage.setItem("fuelAnnouncements", JSON.stringify(ANNOUNCEMENTS));
+    loadAnnouncements();
+    showNotification('تم حذف الإعلان', 'success');
+  }
+}
+
+// ===== التقارير المتقدمة =====
+function updateStatistics() {
+  // إحصائيات عامة
+  document.getElementById('totalEntities').textContent = ENTITIES.length;
+  document.getElementById('totalUsers').textContent = Object.keys(USERS).length;
+  document.getElementById('totalCars').textContent = ENTITIES.reduce((sum, e) => sum + e.total, 0);
+  
+  // إحصائيات اليوم
+  const today = document.getElementById('today').value;
+  const todayLogs = LOGS.filter(l => l.date === today && l.type === 'fuel');
+  document.getElementById('todayRecords').textContent = todayLogs.length;
+  document.getElementById('todayCars').textContent = todayLogs.reduce((sum, l) => sum + (l.cars || 0), 0);
+  
+  // نسبة الإنجاز الكلية
+  const totalDone = ENTITIES.reduce((sum, entity) => {
+    const entityLogs = LOGS.filter(l => l.entity === entity.name && l.type === 'fuel');
+    return sum + entityLogs.reduce((s, l) => s + (parseFloat(l.cars) || 0), 0);
+  }, 0);
+  const totalTotal = ENTITIES.reduce((sum, entity) => sum + entity.total, 0);
+  document.getElementById('overallProgress').textContent = calculatePercentage(totalDone, totalTotal) + '%';
+  
+  // المستخدمون النشطون اليوم
+  const activeUsers = new Set(todayLogs.map(l => l.user));
+  document.getElementById('activeUsers').textContent = activeUsers.size;
+}
+
+function generateComprehensiveReport() {
+  const today = document.getElementById('today').value;
+  const capacity = parseFloat(document.getElementById('capacity').value) || 33000;
+  
+  // الحصول على سجلات اليوم
+  const todayLogs = LOGS.filter(l => l.date === today && l.type === 'fuel');
+  const month = today.substring(0, 7);
+  const monthLogs = LOGS.filter(l => l.date.substring(0, 7) === month && l.type === 'fuel');
+  
+  const todayCars = todayLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+  const todayLiters = todayLogs.reduce((sum, l) => sum + (parseFloat(l.liters) || (l.cars * capacity)), 0);
+  
+  const monthCars = monthLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+  const monthLiters = monthLogs.reduce((sum, l) => sum + (parseFloat(l.liters) || (l.cars * capacity)), 0);
+  
+  let reportHTML = `
+    <div style="padding: 20px;">
+      <h2 style="text-align: center; color: #2c3e50;">${SYSTEM_SETTINGS.systemName}</h2>
+      <h3 style="text-align: center; color: #666;">تقرير شامل - ${new Date().toLocaleDateString('ar-IQ')}</h3>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+          <h4>📊 إحصائيات عامة</h4>
+          <p>عدد الجهات: <strong>${ENTITIES.length}</strong></p>
+          <p>إجمالي السيارات: <strong>${ENTITIES.reduce((sum, e) => sum + e.total, 0)}</strong></p>
+          <p>عدد المستخدمين: <strong>${Object.keys(USERS).length}</strong></p>
+          <p>إجمالي السجلات: <strong>${LOGS.filter(l => l.type === 'fuel').length}</strong></p>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+          <h4>📅 إحصائيات اليوم (${today})</h4>
+          <p>عدد السجلات: <strong>${todayLogs.length}</strong></p>
+          <p>السيارات المجهزة: <strong>${todayCars}</strong></p>
+          <p>اللترات المجهزة: <strong>${todayLiters.toLocaleString()} لتر</strong></p>
+          <p>متوسط السيارات/جهة: <strong>${todayLogs.length > 0 ? (todayCars / todayLogs.length).toFixed(1) : 0}</strong></p>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+          <h4>📈 إحصائيات الشهر (${month})</h4>
+          <p>عدد السجلات: <strong>${monthLogs.length}</strong></p>
+          <p>السيارات المجهزة: <strong>${monthCars}</strong></p>
+          <p>اللترات المجهزة: <strong>${monthLiters.toLocaleString()} لتر</strong></p>
+          <p>متوسط يومي: <strong>${(monthCars / 30).toFixed(1)} سيارة</strong></p>
+        </div>
+      </div>
+      
+      <h4>🏆 أفضل 5 جهات من حيث الإنجاز</h4>
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+          <tr style="background: #34495e; color: white;">
+            <th>الترتيب</th>
+            <th>الجهة</th>
+            <th>المنجز</th>
+            <th>الإجمالي</th>
+            <th>النسبة</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+  
+  const entityStats = ENTITIES.map(entity => {
+    const entityLogs = LOGS.filter(l => l.entity === entity.name && l.type === 'fuel');
+    const done = entityLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+    const percent = calculatePercentage(done, entity.total);
+    return { name: entity.name, done, total: entity.total, percent };
+  }).sort((a, b) => b.percent - a.percent).slice(0, 5);
+  
+  entityStats.forEach((stat, index) => {
+    reportHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${stat.name}</td>
+        <td>${stat.done}</td>
+        <td>${stat.total}</td>
+        <td>${stat.percent}%</td>
+      </tr>
+    `;
+  });
+  
+  reportHTML += `
+        </tbody>
+      </table>
+      
+      <h4>👥 نشاط المستخدمين اليوم</h4>
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+          <tr style="background: #34495e; color: white;">
+            <th>المستخدم</th>
+            <th>عدد السجلات</th>
+            <th>السيارات</th>
+            <th>آخر نشاط</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+  
+  const userActivity = {};
+  todayLogs.forEach(log => {
+    if (!userActivity[log.user]) {
+      userActivity[log.user] = { count: 0, cars: 0, lastTime: log.time };
+    }
+    userActivity[log.user].count++;
+    userActivity[log.user].cars += log.cars || 0;
+    userActivity[log.user].lastTime = log.time;
+  });
+  
+  Object.keys(userActivity).forEach(username => {
+    const activity = userActivity[username];
+    const user = USERS[username];
+    reportHTML += `
+      <tr>
+        <td>${user?.name || username}</td>
+        <td>${activity.count}</td>
+        <td>${activity.cars}</td>
+        <td>${activity.lastTime}</td>
+      </tr>
+    `;
+  });
+  
+  reportHTML += `
+        </tbody>
+      </table>
+    </div>
+  `;
+  
+  document.getElementById('summaryContent').innerHTML = reportHTML;
+  document.getElementById('summaryModal').classList.remove('hidden');
+}
+
+function closeSummary() {
+  document.getElementById('summaryModal').classList.add('hidden');
+}
+
+// ===== إعدادات النظام =====
+function saveSystemSettings() {
+  SYSTEM_SETTINGS.systemName = document.getElementById('systemName').value;
+  SYSTEM_SETTINGS.defaultCapacity = parseInt(document.getElementById('defaultCapacity').value) || 33000;
+  SYSTEM_SETTINGS.showNotifications = document.getElementById('showNotifications').value === 'true';
+  SYSTEM_SETTINGS.autoBackup = document.getElementById('autoBackup').value;
+  SYSTEM_SETTINGS.theme = document.getElementById('systemTheme').value;
+  
+  localStorage.setItem("fuelSystemSettings", JSON.stringify(SYSTEM_SETTINGS));
+  
+  // تحديث السعة الافتراضية
+  document.getElementById('capacity').value = SYSTEM_SETTINGS.defaultCapacity;
+  
+  // تحديث عنوان النظام
+  document.title = SYSTEM_SETTINGS.systemName;
+  
+  showNotification('تم حفظ إعدادات النظام بنجاح', 'success');
+}
+
+function resetSystemSettings() {
+  showConfirmDialog(
+    'استعادة الإعدادات الافتراضية',
+    'هل تريد استعادة جميع إعدادات النظام إلى القيم الافتراضية؟',
+    function() {
+      SYSTEM_SETTINGS = {
+        systemName: "نظام تجهيز الوقود المتقدم",
+        defaultCapacity: 33000,
+        showNotifications: true,
+        autoBackup: "daily",
+        theme: "blue",
+        language: "ar",
+        quickAdd: true,
+        autoSave: true
+      };
+      
+      localStorage.setItem("fuelSystemSettings", JSON.stringify(SYSTEM_SETTINGS));
+      loadSettings();
+      
+      // تحديث الواجهة
+      document.getElementById('capacity').value = SYSTEM_SETTINGS.defaultCapacity;
+      document.title = SYSTEM_SETTINGS.systemName;
+      
+      showNotification('تم استعادة الإعدادات الافتراضية بنجاح', 'success');
+    }
+  );
+}
+
+function loadSettings() {
+  document.getElementById('systemName').value = SYSTEM_SETTINGS.systemName;
+  document.getElementById('defaultCapacity').value = SYSTEM_SETTINGS.defaultCapacity;
+  document.getElementById('showNotifications').value = SYSTEM_SETTINGS.showNotifications.toString();
+  document.getElementById('autoBackup').value = SYSTEM_SETTINGS.autoBackup;
+  document.getElementById('systemTheme').value = SYSTEM_SETTINGS.theme;
+}
+
+// ===== صيانة النظام =====
+function showConfirmDialog(title, message, confirmCallback) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMessage').textContent = message;
+  document.getElementById('confirmDialog').classList.remove('hidden');
+  
+  document.getElementById('confirmYes').onclick = function() {
+    document.getElementById('confirmDialog').classList.add('hidden');
+    confirmCallback();
+  };
+  
+  document.getElementById('confirmNo').onclick = function() {
+    document.getElementById('confirmDialog').classList.add('hidden');
+  };
+}
+
+function deleteTodayData() {
+  const today = document.getElementById('today').value;
+  showConfirmDialog(
+    'مسح سجلات اليوم',
+    `هل تريد مسح جميع سجلات اليوم (${today})؟`,
+    function() {
+      const initialLength = LOGS.length;
+      LOGS = LOGS.filter(log => !(log.date === today && log.type === 'fuel'));
+      
+      if (LOGS.length < initialLength) {
+        localStorage.setItem("fuelLogs", JSON.stringify(LOGS));
+        updateAllRows();
+        updateStatistics();
+        showNotification(`تم مسح ${initialLength - LOGS.length} سجل من اليوم`, 'success');
+      } else {
+        showNotification('لا توجد سجلات لهذا اليوم', 'info');
+      }
+    }
+  );
+}
+
+function deleteAllLogs() {
+  showConfirmDialog(
+    'مسح جميع السجلات',
+    'هل تريد مسح جميع سجلات النظام؟\n\nهذا الإجراء سيحذف جميع سجلات التجهيز والتسجيلات.',
+    function() {
+      LOGS = [];
+      localStorage.setItem("fuelLogs", JSON.stringify(LOGS));
+      updateAllRows();
+      updateStatistics();
+      showNotification('تم مسح جميع السجلات بنجاح', 'success');
+    }
+  );
+}
+
+function deleteAllEntities() {
+  showConfirmDialog(
+    'مسح جميع الجهات',
+    'هل تريد مسح جميع الجهات؟\n\nسيتم حذف جميع الجهات وأرقامها.',
+    function() {
+      ENTITIES = [];
+      localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+      loadEntitiesToTable();
+      loadEntitiesToFilter();
+      if (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'supervisor') {
+        loadEntitiesList();
+      }
+      showNotification('تم مسح جميع الجهات بنجاح', 'success');
+    }
+  );
+}
+
+function deleteAllNotifications() {
+  showConfirmDialog(
+    'مسح جميع الإشعارات',
+    'هل تريد مسح جميع الإشعارات والإعلانات؟',
+    function() {
+      NOTIFICATIONS = [];
+      ANNOUNCEMENTS = [];
+      localStorage.setItem("fuelNotifications", JSON.stringify(NOTIFICATIONS));
+      localStorage.setItem("fuelAnnouncements", JSON.stringify(ANNOUNCEMENTS));
+      loadNotifications();
+      loadAnnouncements();
+      showNotification('تم مسح جميع الإشعارات والإعلانات', 'success');
+    }
+  );
+}
+
+function deleteAllData() {
+  showConfirmDialog(
+    'مسح جميع بيانات النظام',
+    '⚠️ تحذير شديد: هل أنت متأكد من مسح جميع بيانات النظام؟\n\nهذا الإجراء سيحذف:\n• جميع الجهات\n• جميع السجلات\n• جميع الإشعارات\n• جميع الإعلانات\n• جميع الإعدادات (باستثناء المستخدمين)\n\nهذا الإجراء لا يمكن التراجع عنه!',
+    function() {
+      // مسح جميع البيانات ما عدا المستخدمين
+      ENTITIES = [];
+      LOGS = [];
+      NOTIFICATIONS = [];
+      ANNOUNCEMENTS = [];
+      SYSTEM_SETTINGS = {
+        systemName: "نظام تجهيز الوقود المتقدم",
+        defaultCapacity: 33000,
+        showNotifications: true,
+        autoBackup: "daily",
+        theme: "blue",
+        language: "ar",
+        quickAdd: true,
+        autoSave: true
+      };
+      
+      // حفظ البيانات الفارغة
+      localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+      localStorage.setItem("fuelLogs", JSON.stringify(LOGS));
+      localStorage.setItem("fuelNotifications", JSON.stringify(NOTIFICATIONS));
+      localStorage.setItem("fuelAnnouncements", JSON.stringify(ANNOUNCEMENTS));
+      localStorage.setItem("fuelSystemSettings", JSON.stringify(SYSTEM_SETTINGS));
+      
+      // تحديث الواجهة
+      loadEntitiesToTable();
+      loadEntitiesToFilter();
+      if (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'supervisor') {
+        loadEntitiesList();
+      }
+      loadNotifications();
+      loadAnnouncements();
+      loadSettings();
+      updateStatistics();
+      
+      showNotification('تم مسح جميع بيانات النظام بنجاح', 'success');
+    }
+  );
+}
+
+function exportCurrentData() {
+  const data = {
+    entities: ENTITIES,
+    logs: LOGS,
+    notifications: NOTIFICATIONS,
+    announcements: ANNOUNCEMENTS,
+    settings: SYSTEM_SETTINGS,
+    exportDate: new Date().toISOString(),
+    version: "1.0"
+  };
+  
+  const dataStr = JSON.stringify(data, null, 2);
+  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  
+  const exportFileName = `نسخة_احتياطية_${new Date().toISOString().slice(0,10)}.json`;
+  
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileName);
+  linkElement.click();
+  
+  // حفظ تاريخ آخر نسخة
+  localStorage.setItem("lastBackupDate", new Date().toISOString());
+  updateMaintenanceStats();
+  
+  showNotification("تم تصدير نسخة احتياطية من البيانات", 'success');
+}
+
+function importBackupData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  
+  input.onchange = function(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(event) {
+      try {
+        const backup = JSON.parse(event.target.result);
+        
+        showConfirmDialog(
+          'استيراد نسخة احتياطية',
+          `هل تريد استيراد النسخة الاحتياطية بتاريخ ${new Date(backup.exportDate).toLocaleString('ar-IQ')}؟`,
+          function() {
+            // استيراد البيانات
+            ENTITIES = backup.entities || ENTITIES;
+            LOGS = backup.logs || LOGS;
+            NOTIFICATIONS = backup.notifications || NOTIFICATIONS;
+            ANNOUNCEMENTS = backup.announcements || ANNOUNCEMENTS;
+            SYSTEM_SETTINGS = backup.settings || SYSTEM_SETTINGS;
+            
+            // حفظ البيانات في localStorage
+            localStorage.setItem("fuelEntities", JSON.stringify(ENTITIES));
+            localStorage.setItem("fuelLogs", JSON.stringify(LOGS));
+            localStorage.setItem("fuelNotifications", JSON.stringify(NOTIFICATIONS));
+            localStorage.setItem("fuelAnnouncements", JSON.stringify(ANNOUNCEMENTS));
+            localStorage.setItem("fuelSystemSettings", JSON.stringify(SYSTEM_SETTINGS));
+            
+            // تحديث الواجهة
+            loadEntitiesToTable();
+            loadEntitiesToFilter();
+            if (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'supervisor') {
+              loadEntitiesList();
+            }
+            loadNotifications();
+            loadAnnouncements();
+            loadSettings();
+            updateStatistics();
+            
+            showNotification('تم استيراد النسخة الاحتياطية بنجاح', 'success');
+          }
+        );
+      } catch (error) {
+        showNotification("فشل في استيراد النسخة. تأكد من صحة الملف", 'error');
+      }
+    };
+    
+    reader.readAsText(file);
+  };
+  
+  input.click();
+}
+
+function updateMaintenanceStats() {
+  // حساب حجم البيانات
+  const entitiesSize = JSON.stringify(ENTITIES).length;
+  const logsSize = JSON.stringify(LOGS).length;
+  const notificationsSize = JSON.stringify(NOTIFICATIONS).length;
+  const announcementsSize = JSON.stringify(ANNOUNCEMENTS).length;
+  const settingsSize = JSON.stringify(SYSTEM_SETTINGS).length;
+  const usersSize = JSON.stringify(USERS).length;
+  
+  const totalSize = entitiesSize + logsSize + notificationsSize + announcementsSize + settingsSize + usersSize;
+  const sizeInKB = (totalSize / 1024).toFixed(2);
+  
+  document.getElementById('dataSize').textContent = sizeInKB + ' KB';
+  
+  // عرض تاريخ آخر نسخة
+  const lastBackup = localStorage.getItem("lastBackupDate");
+  if (lastBackup) {
+    document.getElementById('lastBackup').textContent = new Date(lastBackup).toLocaleDateString('ar-IQ');
+  } else {
+    document.getElementById('lastBackup').textContent = '--';
+  }
+  
+  // عرض تاريخ آخر مسح
+  const lastCleanup = localStorage.getItem("lastCleanupDate");
+  if (lastCleanup) {
+    document.getElementById('lastCleanup').textContent = new Date(lastCleanup).toLocaleDateString('ar-IQ');
+  } else {
+    document.getElementById('lastCleanup').textContent = '--';
+  }
+}
+
+// ===== دوال التبويب =====
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  document.getElementById(tabName + 'Tab').classList.add('active');
+  event.target.classList.add('active');
+  
+  // إذا كان تبويب الصيانة، قم بتحديث الإحصائيات
+  if (tabName === 'maintenance') {
+    updateMaintenanceStats();
+  }
+}
+
+// ===== تسجيل الدخول والخروج =====
+function login() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const loginMsg = document.getElementById('loginMsg');
+  
+  if (!username || !password) {
+    loginMsg.textContent = "يرجى إدخال اسم المستخدم وكلمة المرور";
+    loginMsg.style.display = 'block';
+    return;
+  }
+  
+  if (USERS[username] && USERS[username].pass === password) {
+    CURRENT_USER = username;
+    CURRENT_ROLE = USERS[username].role;
+    
+    // تسجيل الدخول
+    LOGS.push({
+      type: 'login',
+      user: CURRENT_USER,
+      userDisplay: USERS[CURRENT_USER]?.name || CURRENT_USER,
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString(),
+      action: 'تسجيل دخول'
+    });
+    localStorage.setItem("fuelLogs", JSON.stringify(LOGS));
+    
+    // تحديث آخر دخول
+    USERS[username].lastLogin = new Date().toISOString();
+    localStorage.setItem("fuelSystemUsers", JSON.stringify(USERS));
+    
+    // إظهار النظام
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('systemBox').classList.remove('hidden');
+    
+    // تهيئة النظام
+    initSystem();
+    
+    showNotification(`مرحباً ${USERS[username].name}!`, 'success');
+  } else {
+    loginMsg.textContent = "اسم المستخدم أو كلمة المرور غير صحيحة";
+    loginMsg.style.display = 'block';
+  }
+}
+
+function logout() {
+  if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+    LOGS.push({
+      type: 'logout',
+      user: CURRENT_USER,
+      userDisplay: USERS[CURRENT_USER]?.name || CURRENT_USER,
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString(),
+      action: 'تسجيل خروج'
+    });
+    localStorage.setItem("fuelLogs", JSON.stringify(LOGS));
+    
+    CURRENT_USER = null;
+    CURRENT_ROLE = null;
+    document.getElementById('systemBox').classList.add('hidden');
+    document.getElementById('loginBox').classList.remove('hidden');
+    
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('loginMsg').style.display = 'none';
+  }
+}
+
+// ===== تهيئة النظام =====
+function initSystem() {
+  // تعيين تاريخ اليوم
+  const todayInput = document.getElementById('today');
+  const today = new Date();
+  todayInput.valueAsDate = today;
+  
+  // تحميل البيانات
+  loadEntitiesToTable();
+  loadEntitiesToFilter();
+  updateUserDisplay();
+  
+  // إظهار/إخفاء عناصر حسب الصلاحية
+  if (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'supervisor') {
+    document.getElementById('adminPanel').classList.remove('hidden');
+    document.getElementById('quickAddSection').classList.remove('hidden');
+    loadUsersList();
+    loadEntitiesList();
+    loadNotifications();
+    loadAnnouncements();
+    loadSettings();
+  }
+  
+  // تحديث الإحصائيات
+  updateStatistics();
+}
+
+// ===== دالة حفظ جميع التغييرات =====
+function saveAllChanges() {
+  saveAllEntities();
+  if (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'supervisor') {
+    saveSystemSettings();
+  }
+  showNotification('تم حفظ جميع التغييرات في النظام', 'success');
+}
+
+// ===== إظهار ملخص الإحصائيات =====
+function showSummary() {
+  const today = document.getElementById('today').value;
+  const capacity = parseFloat(document.getElementById('capacity').value) || 33000;
+  
+  const todayLogs = LOGS.filter(l => l.date === today && l.type === 'fuel');
+  const month = today.substring(0, 7);
+  const monthLogs = LOGS.filter(l => l.date.substring(0, 7) === month && l.type === 'fuel');
+  
+  const todayCars = todayLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+  const todayLiters = todayLogs.reduce((sum, l) => sum + (parseFloat(l.liters) || (l.cars * capacity)), 0);
+  
+  const monthCars = monthLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+  const monthLiters = monthLogs.reduce((sum, l) => sum + (parseFloat(l.liters) || (l.cars * capacity)), 0);
+  
+  let content = `
+    <div style="padding: 20px;">
+      <h3 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">ملخص الإحصائيات المتقدم</h3>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+          <h4>📊 إحصائيات النظام</h4>
+          <p>عدد الجهات: <strong>${ENTITIES.length}</strong></p>
+          <p>عدد المستخدمين: <strong>${Object.keys(USERS).length}</strong></p>
+          <p>إجمالي السجلات: <strong>${LOGS.length}</strong></p>
+          <p>نسبة الإنجاز الكلية: <strong>${calculatePercentage(
+            ENTITIES.reduce((sum, entity) => {
+              const entityLogs = LOGS.filter(l => l.entity === entity.name && l.type === 'fuel');
+              return sum + entityLogs.reduce((s, l) => s + (parseFloat(l.cars) || 0), 0);
+            }, 0),
+            ENTITIES.reduce((sum, entity) => sum + entity.total, 0)
+          )}%</strong></p>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+          <h4>📅 إحصائيات اليوم (${today})</h4>
+          <p>عدد السجلات: <strong>${todayLogs.length}</strong></p>
+          <p>السيارات المجهزة: <strong>${todayCars}</strong></p>
+          <p>اللترات المجهزة: <strong>${todayLiters.toLocaleString()} لتر</strong></p>
+          <p>متوسط السيارات/جهة: <strong>${todayLogs.length > 0 ? (todayCars / todayLogs.length).toFixed(1) : 0}</strong></p>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+          <h4>📈 إحصائيات الشهر (${month})</h4>
+          <p>عدد السجلات: <strong>${monthLogs.length}</strong></p>
+          <p>السيارات المجهزة: <strong>${monthCars}</strong></p>
+          <p>اللترات المجهزة: <strong>${monthLiters.toLocaleString()} لتر</strong></p>
+          <p>متوسط يومي: <strong>${(monthCars / 30).toFixed(1)} سيارة</strong></p>
+        </div>
+      </div>
+      
+      <h4>🏆 أفضل 5 جهات من حيث الإنجاز</h4>
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+          <tr style="background: #34495e; color: white;">
+            <th>الترتيب</th>
+            <th>الجهة</th>
+            <th>المنجز</th>
+            <th>الإجمالي</th>
+            <th>النسبة</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+  
+  const entityStats = ENTITIES.map(entity => {
+    const entityLogs = LOGS.filter(l => l.entity === entity.name && l.type === 'fuel');
+    const done = entityLogs.reduce((sum, l) => sum + (parseFloat(l.cars) || 0), 0);
+    const percent = calculatePercentage(done, entity.total);
+    return { name: entity.name, done, total: entity.total, percent };
+  }).sort((a, b) => b.percent - a.percent).slice(0, 5);
+  
+  entityStats.forEach((stat, index) => {
+    content += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${stat.name}</td>
+        <td>${stat.done}</td>
+        <td>${stat.total}</td>
+        <td>${stat.percent}%</td>
+      </tr>
+    `;
+  });
+  
+  content += `
+        </tbody>
+      </table>
+      
+      <h4>👥 نشاط المستخدمين اليوم</h4>
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+          <tr style="background: #34495e; color: white;">
+            <th>المستخدم</th>
+            <th>عدد السجلات</th>
+            <th>السيارات</th>
+            <th>آخر نشاط</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+  
+  const userActivity = {};
+  todayLogs.forEach(log => {
+    if (!userActivity[log.user]) {
+      userActivity[log.user] = { count: 0, cars: 0, lastTime: log.time };
+    }
+    userActivity[log.user].count++;
+    userActivity[log.user].cars += log.cars || 0;
+    userActivity[log.user].lastTime = log.time;
+  });
+  
+  Object.keys(userActivity).forEach(username => {
+    const activity = userActivity[username];
+    const user = USERS[username];
+    content += `
+      <tr>
+        <td>${user?.name || username}</td>
+        <td>${activity.count}</td>
+        <td>${activity.cars}</td>
+        <td>${activity.lastTime}</td>
+      </tr>
+    `;
+  });
+  
+  content += `
+        </tbody>
+      </table>
+    </div>
+  `;
+  
+  document.getElementById('summaryContent').innerHTML = content;
+  document.getElementById('summaryModal').classList.remove('hidden');
+}
+
+// ===== تهيئة النظام عند التحميل =====
+window.addEventListener('load', function() {
+  const todayInput = document.getElementById('today');
+  if (todayInput) {
+    const today = new Date();
+    todayInput.valueAsDate = today;
+  }
+  
+  if (SYSTEM_SETTINGS.defaultCapacity) {
+    document.getElementById('capacity').value = SYSTEM_SETTINGS.defaultCapacity;
+  }
+});
+</script>
+</body>
+</html>
